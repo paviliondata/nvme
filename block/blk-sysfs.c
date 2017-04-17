@@ -208,7 +208,7 @@ static ssize_t queue_discard_max_store(struct request_queue *q,
 
 static ssize_t queue_discard_zeroes_data_show(struct request_queue *q, char *page)
 {
-	return queue_var_show(queue_discard_zeroes_data(q), page);
+	return queue_var_show(0, page);
 }
 
 static ssize_t queue_write_same_max_show(struct request_queue *q, char *page)
@@ -803,7 +803,7 @@ static void blk_release_queue(struct kobject *kobj)
 
 	if (q->elevator) {
 		ioc_clear_queue(q);
-		elevator_exit(q->elevator);
+		elevator_exit(q, q->elevator);
 	}
 
 	blk_free_queue_stats(q->stats);

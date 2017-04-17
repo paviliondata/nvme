@@ -43,8 +43,6 @@ extern unsigned char shutdown_timeout;
 #define NVME_DEFAULT_KATO	5
 #define NVME_KATO_GRACE		10
 
-extern unsigned int nvme_max_retries;
-
 enum {
 	NVME_NS_LBA		= 0,
 	NVME_NS_LIGHTNVM	= 1,
@@ -68,10 +66,10 @@ enum nvme_quirks {
 	NVME_QUIRK_IDENTIFY_CNS			= (1 << 1),
 
 	/*
-	 * The controller deterministically returns O's on reads to discarded
-	 * logical blocks.
+	 * The controller deterministically returns O's on reads to
+	 * logical blocks that deallocate was called on.
 	 */
-	NVME_QUIRK_DISCARD_ZEROES		= (1 << 2),
+	NVME_QUIRK_DEALLOCATE_ZEROES		= (1 << 2),
 
 	/*
 	 * The controller needs a delay before starts checking the device
@@ -92,6 +90,7 @@ enum nvme_quirks {
 struct nvme_request {
 	struct nvme_command	*cmd;
 	union nvme_result	result;
+	u8			retries;
 };
 
 static inline struct nvme_request *nvme_req(struct request *req)
