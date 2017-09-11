@@ -174,6 +174,7 @@ static void nvme_rdma_free_qe(struct ib_device *ibdev, struct nvme_rdma_qe *qe,
 {
 	ib_dma_unmap_single(ibdev, qe->dma, capsule_size, dir);
 	kfree(qe->data);
+	qe->data = NULL;
 }
 
 static int nvme_rdma_alloc_qe(struct ib_device *ibdev, struct nvme_rdma_qe *qe,
@@ -765,6 +766,8 @@ static void nvme_rdma_error_recovery_work(struct work_struct *work)
 	int i;
 
 	nvme_stop_ctrl(&ctrl->ctrl);
+
+	nvme_trigger_failover(&ctrl->ctrl);
 
 	for (i = 0; i < ctrl->ctrl.queue_count; i++)
 		clear_bit(NVME_RDMA_Q_LIVE, &ctrl->queues[i].flags);
